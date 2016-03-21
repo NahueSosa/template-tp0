@@ -20,11 +20,11 @@ public class RegExGeneratorTest {
         return results
                 .stream()
                 .reduce(true,
-                    (acc, item) -> {
-                        Matcher matcher = pattern.matcher(item);
-                        return acc && matcher.find();
-                    },
-                    (item1, item2) -> item1 && item2);
+                        (acc, item) -> {
+                            Matcher matcher = pattern.matcher(item);
+                            return acc && matcher.find();
+                        },
+                        (item1, item2) -> item1 && item2);
     }
 
     @Test
