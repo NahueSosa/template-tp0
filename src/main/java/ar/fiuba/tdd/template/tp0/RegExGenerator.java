@@ -47,23 +47,7 @@ public class RegExGenerator {
 
         for (Field field : fields) {
             int times;
-            switch (field.quant) {
-                case QUANT_ASTERISK:
-                    times = getRandomIntBetween(0, maxLength);
-                    break;
-                case QUANT_PLUS:
-                    times = getRandomIntBetween(1, maxLength);
-                    break;
-                case QUANT_QUEST:
-                    times = getRandomIntBetween(0, 1);
-                    break;
-                case QUANT_ONE:
-                default:
-                    times = 1;
-                    break;
-
-            }
-
+            times = getTimesFromQuantifier(field.quant);
             int count = 0;
             while (count < times) {
                 switch (field.chars.charAt(0)) {
@@ -86,50 +70,89 @@ public class RegExGenerator {
         return partialResult.toString();
     }
 
+    private int getTimesFromQuantifier(int quant) {
+        int times;
+        switch (quant) {
+            case QUANT_ASTERISK:
+                times = getRandomIntBetween(0, maxLength);
+                break;
+            case QUANT_PLUS:
+                times = getRandomIntBetween(1, maxLength);
+                break;
+            case QUANT_QUEST:
+                times = getRandomIntBetween(0, 1);
+                break;
+            case QUANT_ONE:
+            default:
+                times = 1;
+                break;
+        }
+        return times;
+    }
+
     private List<Field> parseRegEx(String regEx) {
         ArrayList<Field> fields = new ArrayList<>();
-
-        int lenght = regEx.length();
         int readChar = 0;
-
-        while (readChar < lenght) {
+        while (readChar < regEx.length()) {
             char currChar = regEx.charAt(readChar);
-
             switch (currChar) {
-                case BACKSLASH: {
-                    Field fieldToAdd = getFieldFromBackSlash(regEx.substring(readChar));
-                    if (QUANT_ONE == fieldToAdd.quant) {
-                        readChar += 2;
-                    } else {
-                        readChar += 3;
-                    }
-                    fields.add(fieldToAdd);
+                case BACKSLASH:
+                    readChar = getReadCharBackSlash(regEx, fields, readChar);
                     break;
-                }
-                case OPEN_BRACKET: {
-                    Field fieldToAdd = getFieldFromBrackets(regEx.substring(readChar));
-                    if (QUANT_ONE == fieldToAdd.quant) {
-                        readChar += fieldToAdd.chars.length();
-                    } else {
-                        readChar += fieldToAdd.chars.length() + 1;
-                    }
-                    fields.add(fieldToAdd);
+                case OPEN_BRACKET:
+                    readChar = getReadCharOpenBracket(regEx, fields, readChar);
                     break;
-                }
-                default: {
-                    Field fieldToAdd = getFieldFromChar(regEx.substring(readChar));
-                    if (QUANT_ONE == fieldToAdd.quant) {
-                        readChar += 1;
-
-                    } else {
-                        readChar += 2;
-                    }
-                    fields.add(fieldToAdd);
+                default:
+                    readChar = getReadCharDefault(regEx, fields, readChar);
                     break;
-                }
             }
         }
         return fields;
+    }
+
+    private int getReadCharBackSlash(String regEx, ArrayList<Field> fields, int readChar) {
+        Field fieldToAddBS = getFieldFromBackSlash(regEx.substring(readChar));
+        readChar += getAddFromBackSlash(fieldToAddBS.quant);
+        fields.add(fieldToAddBS);
+        return readChar;
+    }
+
+    private int getReadCharOpenBracket(String regEx, ArrayList<Field> fields, int readChar) {
+        Field fieldToAddOB = getFieldFromBrackets(regEx.substring(readChar));
+        readChar += getAddFromBrackets(fieldToAddOB);
+        fields.add(fieldToAddOB);
+        return readChar;
+    }
+
+    private int getReadCharDefault(String regEx, ArrayList<Field> fields, int readChar) {
+        Field fieldToAddDef = getFieldFromChar(regEx.substring(readChar));
+        readChar += getAddFromDefault(fieldToAddDef.quant);
+        fields.add(fieldToAddDef);
+        return readChar;
+    }
+
+    private int getAddFromDefault(int quant) {
+        if (QUANT_ONE == quant) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+
+    private int getAddFromBrackets(Field fieldToAdd) {
+        if (QUANT_ONE == fieldToAdd.quant) {
+            return fieldToAdd.chars.length();
+        } else {
+            return fieldToAdd.chars.length() + 1;
+        }
+    }
+
+    private int getAddFromBackSlash(int quant) {
+        if (QUANT_ONE == quant) {
+            return 2;
+        } else {
+            return 3;
+        }
     }
 
     private Field getFieldFromBrackets(String subRegEx) {
@@ -150,8 +173,9 @@ public class RegExGenerator {
     }
 
     private Field getFieldFromChar(String subRegEx) {
-        if (subRegEx.length() == 1)
+        if (subRegEx.length() == 1) {
             return new Field(subRegEx, QUANT_ONE);
+        }
 
         switch (subRegEx.charAt(1)) {
             case QUANT_ASTERISK:
