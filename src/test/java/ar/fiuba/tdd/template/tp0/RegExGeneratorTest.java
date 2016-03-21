@@ -14,7 +14,6 @@ public class RegExGeneratorTest {
         int maxLenght = 5;
         RegExGenerator generator = new RegExGenerator(maxLenght);
         List<String> results = generator.generate(regEx, numberOfResults);
-
         // force matching the beginning and the end of the strings
         Pattern pattern = Pattern.compile("^" + regEx + "$");
         return results.stream().reduce(true, (acc, item) -> {
