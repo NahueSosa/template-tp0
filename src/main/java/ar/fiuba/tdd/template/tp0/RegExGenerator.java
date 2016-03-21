@@ -44,10 +44,8 @@ public class RegExGenerator {
 
     private String generateResult(List<Field> fields) {
         StringBuilder partialResult = new StringBuilder();
-
         for (Field field : fields) {
-            int times;
-            times = getTimesFromQuantifier(field.quant);
+            int times = getTimesFromQuantifier(field.quant);
             int count = 0;
             while (count < times) {
                 switch (field.chars.charAt(0)) {
