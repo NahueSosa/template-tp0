@@ -25,12 +25,12 @@ public class RegExGeneratorTest {
 
     @Test
     public void testAnyCharacter() {
-        assertTrue(validate(".", 5));
+        assertTrue(validate(".", 3));
     }
 
     @Test
     public void testMultipleCharacters() {
-        assertTrue(validate("...", 5));
+        assertTrue(validate("...", 3));
     }
 
     @Test
@@ -40,12 +40,12 @@ public class RegExGeneratorTest {
 
     @Test
     public void testLiteralDotCharacter() {
-        assertTrue(validate("\\@..", 5));
+        assertTrue(validate("\\@..", 3));
     }
 
     @Test
     public void testZeroOrOneCharacter() {
-        assertTrue(validate("\\@.h?", 5));
+        assertTrue(validate("\\@.h?", 3));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class RegExGeneratorTest {
 
     @Test
     public void testPoints() {
-        assertTrue(validate(".....", 20));
+        assertTrue(validate("...", 5));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class RegExGeneratorTest {
 
     @Test
     public void testAllQuantifiers() {
-        assertTrue(validate("a+b*c?", 5));
+        assertTrue(validate("a+b*c?", 3));
     }
 
     @Test

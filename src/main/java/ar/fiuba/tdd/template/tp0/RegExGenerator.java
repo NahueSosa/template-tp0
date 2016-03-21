@@ -60,7 +60,6 @@ public class RegExGenerator {
                         break;
                     default:
                         partialResult.append(field.chars.substring(0, 1));
-                        break;
                 }
                 count++;
             }
