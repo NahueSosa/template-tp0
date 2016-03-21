@@ -31,8 +31,9 @@ public class RegExGenerator {
 
         while (results.size() < numberOfResults) {
             String result = generateResult(fields);
-            if (!results.contains(result) && !containsInvalidChars(result))
+            if (!results.contains(result) && !containsInvalidChars(result)) {
                 results.add(result);
+            }
         }
         return results;
     }
@@ -45,7 +46,7 @@ public class RegExGenerator {
         StringBuilder partialResult = new StringBuilder();
 
         for (Field field : fields) {
-            int times = 0;
+            int times;
             switch (field.quant) {
                 case QUANT_ASTERISK:
                     times = getRandomIntBetween(0, maxLength);
@@ -57,8 +58,10 @@ public class RegExGenerator {
                     times = getRandomIntBetween(0, 1);
                     break;
                 case QUANT_ONE:
+                default:
                     times = 1;
                     break;
+
             }
 
             int count = 0;
@@ -95,28 +98,32 @@ public class RegExGenerator {
             switch (currChar) {
                 case BACKSLASH: {
                     Field fieldToAdd = getFieldFromBackSlash(regEx.substring(readChar));
-                    if (QUANT_ONE == fieldToAdd.quant)
+                    if (QUANT_ONE == fieldToAdd.quant) {
                         readChar += 2;
-                    else
+                    } else {
                         readChar += 3;
+                    }
                     fields.add(fieldToAdd);
                     break;
                 }
                 case OPEN_BRACKET: {
                     Field fieldToAdd = getFieldFromBrackets(regEx.substring(readChar));
-                    if (QUANT_ONE == fieldToAdd.quant)
+                    if (QUANT_ONE == fieldToAdd.quant) {
                         readChar += fieldToAdd.chars.length();
-                    else
+                    } else {
                         readChar += fieldToAdd.chars.length() + 1;
+                    }
                     fields.add(fieldToAdd);
                     break;
                 }
                 default: {
                     Field fieldToAdd = getFieldFromChar(regEx.substring(readChar));
-                    if (QUANT_ONE == fieldToAdd.quant)
+                    if (QUANT_ONE == fieldToAdd.quant) {
                         readChar += 1;
-                    else
+
+                    } else {
                         readChar += 2;
+                    }
                     fields.add(fieldToAdd);
                     break;
                 }
